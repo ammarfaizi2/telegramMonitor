@@ -1,14 +1,17 @@
 <?php
 
-if (!file_exists('madeline.php')) {
-    copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
-}
-include 'madeline.php';
+use danog\MadelineProto\API;
+use danog\MadelineProto\EventHandler as BaseEventHandler;
 
-$MadelineProto = new \danog\MadelineProto\API('session.madeline');
+if (!file_exists("madeline.php")) {
+    copy("https://phar.madelineproto.xyz/madeline.php", "madeline.php");
+}
+require "madeline.php";
+
+$MadelineProto = new API("session.madeline");
 $MadelineProto->start();
 
-class EventHandler extends \danog\MadelineProto\EventHandler
+class EventHandler extends BaseEventHandler
 {
     public function onUpdateNewChannelMessage($update)
     {
@@ -31,6 +34,5 @@ class EventHandler extends \danog\MadelineProto\EventHandler
     }
 }
 
-
-$MadelineProto->setEventHandler('\EventHandler');
-$MadelineProto->loop(-1);
+$MadelineProto->setEventHandler("\EventHandler");
+$MadelineProto->loop(3);
