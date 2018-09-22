@@ -4,7 +4,7 @@ sys.path.append('../')
 
 from config.mongo import *
 from pymongo import MongoClient
-
+import json
 client = MongoClient(HOST, PORT)
 db = client[DB_NAME]
 

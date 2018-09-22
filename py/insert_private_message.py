@@ -3,4 +3,4 @@ import json
 
 realinput = process_stdin()
 json_input = json.loads(realinput)
-db.crawling_target.insert(json)
+print(db.private_messages_data.insert(json_input))
