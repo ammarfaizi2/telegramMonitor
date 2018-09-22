@@ -2,5 +2,8 @@
 *.tmp
 *.swp
 *.swo
+*.pyc
+*.pyo
 *.lock
 /vendor/
+__pycache__

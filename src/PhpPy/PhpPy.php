@@ -4,7 +4,7 @@ namespace PhpPy;
 
 /**
  * @author Ammar Faizi <ammarfaizi2@gmail.com>
- * @package \Phx\Polymerization
+ * @package \PhpPy
  * @since 0.0.1
  */
 final class PhpPy

@@ -10,11 +10,17 @@ DEBUG_MODE or ob_start();
 
 /**
  * @author Ammar Faizi <ammarfaizi2@gmail.com>
+ * @package \TelegramDaemon
  * @license MIT
  * @version 0.0.1
  */
 class EventHandler extends BaseEventHandler
 {
+    /**
+     * @var \TelegramDaemon\Database
+     */
+    protected $db;
+
     /**
      * @param inherit
      *
@@ -81,12 +87,33 @@ class EventHandler extends BaseEventHandler
                 default:
                     break;
             }
+
+        } else {
+
+            if (
+                isset($u["message"]["message"]) && 
+                is_string($u["message"]["message"]) &&
+                $u["message"]["message"] !== ""
+            ) {
+                $db = new Database;
+                $db->insertPrivateMessage(
+                    [
+                        "user_id" => $u["message"]["from_id"],
+                        "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
+                        "unix_date" => $u["message"]["date"],
+                        "message_type" => "text",
+                        "text" => $u["message"]["message"],
+                        "files" => []
+                    ]
+                );
+            }
+
         }
 
         //
-        // Debug message
+        // Debug message.
         //
-        // Do not use this in public unless you are running a bot.
+        // Do not use this in public unless you are running a bot because it can causes a spam.
         //
         // $this->messages->sendMessage(
         //     [
@@ -103,9 +130,9 @@ class EventHandler extends BaseEventHandler
     /**
      * @param string $tmpFile
      * @param string $ext
-     * @return bool
+     * @return string
      */
-    private function saveFiletoStorage(string $tmpFile, string $ext): bool
+    private function saveFiletoStorage(string $tmpFile, string $ext): string
     {
         $hashfile = sha1_file($tmpFile)."_".md5_file($tmpFile);
         if (!file_exists(STORAGE_PATH."/files/{$hashfile}.{$ext}")) {
@@ -126,7 +153,7 @@ class EventHandler extends BaseEventHandler
                 return false;
             }
         }
-        return true;
+        return $hashfile.".".$ext;
     }
 
     /**
@@ -139,12 +166,22 @@ class EventHandler extends BaseEventHandler
     {
         if (isset($u["message"]["media"]["photo"])) {
             $hash = sha1(json_encode($u));
-            $this->saveFiletoStorage(
+            $file = $this->saveFiletoStorage(
                 $this->download_to_file(
                     $u,
                     STORAGE_PATH."/tmp/files/{$hash}.jpg"
                 ),
                 "jpg"
+            );
+            $this->db->insertPrivateMessage(
+                [
+                    "user_id" => $u["message"]["from_id"],
+                    "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
+                    "unix_date" => $u["message"]["date"],
+                    "message_type" => "photo",
+                    "text" => (isset($u["message"]["message"]) ? $u["message"]["message"] : ""),
+                    "files" => [$file]
+                ]
             );
         }
     }
@@ -186,13 +223,25 @@ class EventHandler extends BaseEventHandler
                 is_string($hash) &&
                 is_string($ext)
             ) {
-                $this->saveFiletoStorage(
+                $file = $this->saveFiletoStorage(
                     $this->download_to_file(
                         $u,
                         STORAGE_PATH."/tmp/files/{$hash}.{$ext}"
                     ),
                     $ext
                 );
+                $db = new Database;
+                print $db->insertPrivateMessage(
+                    [
+                        "user_id" => $u["message"]["from_id"],
+                        "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
+                        "unix_date" => $u["message"]["date"],
+                        "message_type" => "photo",
+                        "text" => (isset($u["message"]["message"]) ? $u["message"]["message"] : ""),
+                        "files" => [$file]
+                    ]
+                );
+                die;
             }
 
         }
