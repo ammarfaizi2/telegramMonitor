@@ -1,0 +1,19 @@
+{
+    "name": "ammarfaizi2/telegram-monitor",
+    "description": "Telegram Monitoring Daemon Service",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ammar Faizi",
+            "email": "ammarfaizi2@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    }
+}

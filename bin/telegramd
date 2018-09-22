@@ -11,6 +11,7 @@ use TelegramDaemon\EventHandler;
 
 require __DIR__."/../config/init.php";
 require __DIR__."/../config/telegramd.php";
+require __DIR__."/../vendor/autoload.php";
 
 chdir(STORAGE_PATH."/tmp");
 set_include_path(STORAGE_PATH."/tmp");

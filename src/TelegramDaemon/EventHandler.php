@@ -6,6 +6,8 @@ use danog\MadelineProto\EventHandler as BaseEventHandler;
 
 defined("DEBUG_MODE") or define("DEBUG_MODE", true);
 
+DEBUG_MODE or ob_start();
+
 /**
  * @author Ammar Faizi <ammarfaizi2@gmail.com>
  * @license MIT
@@ -20,7 +22,6 @@ class EventHandler extends BaseEventHandler
      */
     public function __construct(...$parameters)
     {
-        DEBUG_MODE or ob_start();
         parent::__construct(...$parameters);
         if (!file_exists(STORAGE_PATH."/tmp/files")) {
             mkdir(STORAGE_PATH."/tmp/files");
@@ -54,7 +55,7 @@ class EventHandler extends BaseEventHandler
         var_dump($u);
         
         if ($u["message"]["from_id"] != USER_ID) {
-            $this->msgHandle($u, $msg);
+            $this->msgHandle($u);
         } else {
             printf("Skipping...\n");
         }
@@ -68,22 +69,17 @@ class EventHandler extends BaseEventHandler
      */
     private function msgHandle(array $u): void
     {
-        if (
-            isset($u["message"]["media"]["_"]) &&
-            $u["message"]["media"]["_"]
-        ) {
-            $hash = sha1(json_encode($u));
-            $out = $this->download_to_file(
-                $u,
-                STORAGE_PATH."/tmp/files/{$hash}.jpg"
-            );
+        if (isset($u["message"]["media"]["_"])) {
 
-            $hashfile = sha1_file($out)."_".md5_file($out);
-            if (!file_exists(STORAGE_PATH."/files/{$hashfile}.jpg")) {
-                rename(
-                    STORAGE_PATH."/tmp/files/{$hash}.jpg",
-                    STORAGE_PATH."/files/{$hashfile}.jpg"
-                );
+            switch ($u["message"]["media"]["_"]) {
+                case "messageMediaPhoto":
+                    $this->photoHandler($u);
+                    break;
+                case "messageMediaDocument":
+                    $this->documentHandler($u);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -97,5 +93,103 @@ class EventHandler extends BaseEventHandler
                 "reply_to_message_id" => $u["message"]["id"]
             ]
         );
+    }
+
+    /**
+     * @param string $tmpFile
+     * @param string $ext
+     * @return bool
+     */
+    private function saveFiletoStorage(string $tmpFile, string $ext): bool
+    {
+        $hashfile = sha1_file($tmpFile)."_".md5_file($tmpFile);
+        if (!file_exists(STORAGE_PATH."/files/{$hashfile}.{$ext}")) {
+            $rn = rename(
+                $tmpFile,
+                STORAGE_PATH."/files/{$hashfile}.{$ext}"
+            );
+
+            for ($i=0; $i < 5; $i++) {
+                $rn or $rn = rename(
+                    $tmpFile,
+                    STORAGE_PATH."/files/{$hashfile}.{$ext}"
+                );
+            }
+
+            if (!$rn) {
+                unlink($tmpFile);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Download photo.
+     *
+     * @param array $u
+     * @return void
+     */
+    private function photoHandler(array $u): void
+    {
+        if (isset($u["message"]["media"]["photo"])) {
+            $hash = sha1(json_encode($u));
+            $this->saveFiletoStorage(
+                $this->download_to_file(
+                    $u,
+                    STORAGE_PATH."/tmp/files/{$hash}.jpg"
+                ),
+                "jpg"
+            );
+        }
+    }
+
+    /**
+     * Download document.
+     *
+     * @param array $u
+     * @return void
+     */
+    private function documentHandler(array $u): void
+    {
+        if (isset(
+            $u["message"]["media"]["document"],
+            $u["message"]["media"]["document"]["mime_type"]
+        )) {
+            if (isset($u["message"]["media"]["document"]["attributes"][0]["file_name"])) {
+                $ext = explode(".", $u["message"]["media"]["document"]["attributes"][0]["file_name"]);
+                $ext = strtolower($ext[count($ext) - 1]);
+                $hash = sha1(json_encode($u));
+            } else {
+                $hash = sha1(json_encode($u));
+                switch ($u["message"]["media"]["document"]["mime_type"]) {
+                    case "image/webp":
+                        $ext = "webp";
+                        break;
+                    case "audio/ogg":
+                        $ext = "ogg";
+                        break;
+                    default:
+                        $ext = null;
+                        break;
+                }
+            }
+
+            if (
+                isset($u, $hash, $ext) &&
+                is_array($u) &&
+                is_string($hash) &&
+                is_string($ext)
+            ) {
+                $this->saveFiletoStorage(
+                    $this->download_to_file(
+                        $u,
+                        STORAGE_PATH."/tmp/files/{$hash}.{$ext}"
+                    ),
+                    $ext
+                );
+            }
+
+        }
     }
 }
