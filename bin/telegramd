@@ -7,7 +7,7 @@ if (! isset($argv[1])) {
 }
 
 use danog\MadelineProto\API;
-use danog\MadelineProto\EventHandler as BaseEventHandler;
+use TelegramDaemon\EventHandler;
 
 require __DIR__."/../config/init.php";
 require __DIR__."/../config/telegramd.php";
@@ -25,51 +25,10 @@ if (!defined("DEBUG_MODE")) {
 
 require STORAGE_PATH."/tmp/madeline.php";
 
-$MadelineProto = new API(STORAGE_PATH."/telegram_sessions/".$argv[1]);
-$MadelineProto->start();
+$madelineProto = new API(STORAGE_PATH."/telegram_sessions/".$argv[1]);
+$madelineProto->start();
 
-DEBUG_MODE or ob_start();
-
-class EventHandler extends BaseEventHandler
-{
-    public function onUpdateNewChannelMessage($update)
-    {
-        $this->onUpdateNewMessage($update);
-    }
-
-    public function onUpdateNewMessage($u)
-    {
-        DEBUG_MODE or ob_end_clean();
-
-        if ($u["_"] === "updateNewMessage") {
-            var_dump($u);
-            $msg = $u["message"];
-            if ($msg["from_id"] != USER_ID) {
-
-                $this->msgHandle($u, $msg);
-            } else {
-                print "Skipping...\n";
-            }
-        } elseif ($u["_"] === "updateNewChannelMessage") {
-
-        }
-        DEBUG_MODE or ob_start();
-    }
-
-    private function msgHandle($u, $msg)
-    {
-        $this->messages->sendMessage(
-            [
-                "peer" => $msg["from_id"],
-                "message" => json_encode(
-                    $u, 
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                ),
-                "reply_to_message_id" => $msg["id"]
-            ]
-        );
-    }
-}
-
-$MadelineProto->setEventHandler("\EventHandler");
-$MadelineProto->loop(-1);
+$madelineProto->setEventHandler(
+	EventHandler::class
+);
+$madelineProto->loop(-1);
