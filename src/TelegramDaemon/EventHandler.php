@@ -60,12 +60,15 @@ class EventHandler extends BaseEventHandler
 
         var_dump($u);
         
+        DEBUG_MODE or ob_start();
+
         if ($u["message"]["from_id"] != USER_ID) {
             $this->msgHandle($u);
         } else {
             printf("Skipping...\n");
         }
        
+        DEBUG_MODE or ob_end_clean();
         DEBUG_MODE or ob_start();
     }
 
@@ -173,7 +176,8 @@ class EventHandler extends BaseEventHandler
                 ),
                 "jpg"
             );
-            $this->db->insertPrivateMessage(
+            $db = new Database;
+            $db->insertPrivateMessage(
                 [
                     "user_id" => $u["message"]["from_id"],
                     "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
@@ -234,7 +238,7 @@ class EventHandler extends BaseEventHandler
                     $ext
                 );
                 $db = new Database;
-                print $db->insertPrivateMessage(
+                $db->insertPrivateMessage(
                     [
                         "user_id" => $u["message"]["from_id"],
                         "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
@@ -244,7 +248,6 @@ class EventHandler extends BaseEventHandler
                         "files" => [$file]
                     ]
                 );
-                die;
             }
 
         }
