@@ -1,5 +1,8 @@
 <?php
 
+define("DEBUG_MODE", true);
+define("USER_ID", 562623987);
+
 use danog\MadelineProto\API;
 use danog\MadelineProto\EventHandler as BaseEventHandler;
 
@@ -11,6 +14,8 @@ require "madeline.php";
 $MadelineProto = new API("session.madeline");
 $MadelineProto->start();
 
+DEBUG_MODE and ob_start();
+
 class EventHandler extends BaseEventHandler
 {
     public function onUpdateNewChannelMessage($update)
@@ -20,17 +25,35 @@ class EventHandler extends BaseEventHandler
 
     public function onUpdateNewMessage($u)
     {
-        var_dump($u);
+        DEBUG_MODE and ob_end_clean();
+
         if ($u["_"] === "updateNewMessage") {
+            var_dump($u);
             $msg = $u["message"];
-            $this->messages->sendMessage(
-                [
-                    "peer" => $msg["from_id"],
-                    "message" => "Ok...",
-                    "reply_to_message_id" => $msg["id"]
-                ]
-            );  
+            if ($msg["from_id"] != USER_ID) {
+
+                $this->msgHandle($u, $msg);
+            } else {
+                print "Skipping...\n";
+            }
+        } elseif ($u["_"] === "updateNewChannelMessage") {
+
         }
+        DEBUG_MODE and ob_start();
+    }
+
+    private function msgHandle($u, $msg)
+    {
+        $this->messages->sendMessage(
+            [
+                "peer" => $msg["from_id"],
+                "message" => json_encode(
+                    $u, 
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+                ),
+                "reply_to_message_id" => $msg["id"]
+            ]
+        );
     }
 }
 
