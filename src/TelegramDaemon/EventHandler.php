@@ -122,7 +122,7 @@ class EventHandler extends BaseEventHandler
             ) {
                 $db = new Database;
                 print $db->insertChannelMessage(
-                    [
+                    $a = [
                         "user_id" => $u["message"]["from_id"],
                         "message_id" => $u["message"]["id"],
                         "channel_id" => $u["message"]["to_id"]["channel_id"],
@@ -140,6 +140,7 @@ class EventHandler extends BaseEventHandler
                         "files" => []
                     ]
                 )."\n";
+                print json_encode($a);die;
             }
 
         }
