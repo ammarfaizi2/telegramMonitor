@@ -36,27 +36,27 @@ class EventHandler extends BaseEventHandler
      */
     public function onUpdateNewChannelMessage(array $u): void
     {
-        if (!file_exists(STORAGE_PATH."/tmp/files")) {
-            mkdir(STORAGE_PATH."/tmp/files");
-        }
+        // if (!file_exists(STORAGE_PATH."/tmp/files")) {
+        //     mkdir(STORAGE_PATH."/tmp/files");
+        // }
 
-        if ($u["_"] === "updateNewChannelMessage") {
-            DEBUG_MODE or ob_end_clean();
+        // if ($u["_"] === "updateNewChannelMessage") {
+        //     DEBUG_MODE or ob_end_clean();
 
-            if ($u["message"]["from_id"] != USER_ID) {
+        //     if ($u["message"]["from_id"] != USER_ID) {
 
-                print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
+        //         print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
 
-                DEBUG_MODE or ob_start();
-                $this->channelMsgHandle($u);
+        //         DEBUG_MODE or ob_start();
+        //         $this->channelMsgHandle($u);
 
-            } else {
-                printf("Skipping...\n");
-            }
+        //     } else {
+        //         printf("Skipping...\n");
+        //     }
            
-            DEBUG_MODE or ob_end_clean();
-            DEBUG_MODE or ob_start();
-        }
+        //     DEBUG_MODE or ob_end_clean();
+        //     DEBUG_MODE or ob_start();
+        // }
     }
 
     /**

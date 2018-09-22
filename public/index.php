@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__."/../config/init.php";
+
 if (!isset($_GET["session_name"])) {
 	?><!DOCTYPE html>
 	<html>
