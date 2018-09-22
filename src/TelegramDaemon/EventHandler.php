@@ -29,9 +29,6 @@ class EventHandler extends BaseEventHandler
     public function __construct(...$parameters)
     {
         parent::__construct(...$parameters);
-        if (!file_exists(STORAGE_PATH."/tmp/files")) {
-            mkdir(STORAGE_PATH."/tmp/files");
-        }
     }
 
     /**
@@ -39,14 +36,26 @@ class EventHandler extends BaseEventHandler
      */
     public function onUpdateNewChannelMessage(array $u): void
     {
-        // Private message.
-        if ($u["_"] === "updateNewMessage") {
-            $this->onUpdateNewMessage($update);
+        if (!file_exists(STORAGE_PATH."/tmp/files")) {
+            mkdir(STORAGE_PATH."/tmp/files");
         }
 
-        // Channel message.
         if ($u["_"] === "updateNewChannelMessage") {
+            DEBUG_MODE or ob_end_clean();
 
+            if ($u["message"]["from_id"] != USER_ID) {
+
+                print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
+
+                DEBUG_MODE or ob_start();
+                $this->channelMsgHandle($u);
+
+            } else {
+                printf("Skipping...\n");
+            }
+           
+            DEBUG_MODE or ob_end_clean();
+            DEBUG_MODE or ob_start();
         }
     }
 
@@ -56,20 +65,85 @@ class EventHandler extends BaseEventHandler
      */
     public function onUpdateNewMessage(array $u): void
     {
-        DEBUG_MODE or ob_end_clean();
-
-        var_dump($u);
-        
-        DEBUG_MODE or ob_start();
-
-        if ($u["message"]["from_id"] != USER_ID) {
-            $this->msgHandle($u);
-        } else {
-            printf("Skipping...\n");
+        if (!file_exists(STORAGE_PATH."/tmp/files")) {
+            mkdir(STORAGE_PATH."/tmp/files");
         }
-       
-        DEBUG_MODE or ob_end_clean();
-        DEBUG_MODE or ob_start();
+
+        if ($u["_"] === "updateNewMessage") {
+            DEBUG_MODE or ob_end_clean();
+            
+            DEBUG_MODE or ob_start();
+
+            if ($u["message"]["from_id"] != USER_ID) {
+                
+                print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
+
+                $this->msgHandle($u);
+            } else {
+                printf("Skipping...\n");
+            }
+           
+            DEBUG_MODE or ob_end_clean();
+            DEBUG_MODE or ob_start();
+        }
+    }
+
+    /**
+     * @param string $u
+     * @return void
+     */
+    private function channelMsgHandle(array $u): void
+    {
+        if (
+            $u["message"]["to_id"]["_"] !== "peer_channel" ||
+            !isset($u["message"]["to_id"]["channel_id"])
+        ) {
+            return;
+        }
+
+        if (isset($u["message"]["media"]["_"])) {
+
+            switch ($u["message"]["media"]["_"]) {
+                case "messageMediaPhoto":
+                    $this->photoHandler($u);
+                    break;
+                case "messageMediaDocument":
+                    $this->documentHandler($u);
+                    break;
+                default:
+                    break;
+            }
+
+        } else {
+
+            if (
+                isset($u["message"]["message"]) && 
+                is_string($u["message"]["message"]) &&
+                $u["message"]["message"] !== ""
+            ) {
+                $db = new Database;
+                $db->insertPrivateMessage(
+                    [
+                        "user_id" => $u["message"]["from_id"],
+                        "message_id" => $u["message"]["id"],
+                        "channel_id" => $u["message"]["to_id"]["channel_id"],
+                        "reply_to_msg_id" => (
+                            isset($u["message"]["reply_to_msg_id"]) ?
+                                $u["message"]["reply_to_msg_id"] :
+                                    null
+                        ),
+                        "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
+                        "unix_date" => $u["message"]["date"],
+                        "message_type" => "text",
+                        "text" => $u["message"]["message"],
+                        "pts" => $u["message"]["pts"],
+                        "pts_count" => $u["message"]["pts_count"],
+                        "files" => []
+                    ]
+                );
+            }
+
+        }
     }
 
     /**
@@ -102,10 +176,18 @@ class EventHandler extends BaseEventHandler
                 $db->insertPrivateMessage(
                     [
                         "user_id" => $u["message"]["from_id"],
+                        "message_id" => $u["message"]["id"],
+                        "reply_to_msg_id" => (
+                            isset($u["message"]["reply_to_msg_id"]) ?
+                                $u["message"]["reply_to_msg_id"] :
+                                    null
+                        ),
                         "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
                         "unix_date" => $u["message"]["date"],
                         "message_type" => "text",
                         "text" => $u["message"]["message"],
+                        "pts" => $u["message"]["pts"],
+                        "pts_count" => $u["message"]["pts_count"],
                         "files" => []
                     ]
                 );
@@ -180,10 +262,18 @@ class EventHandler extends BaseEventHandler
             $db->insertPrivateMessage(
                 [
                     "user_id" => $u["message"]["from_id"],
+                    "message_id" => $u["message"]["id"],
+                    "reply_to_msg_id" => (
+                        isset($u["message"]["reply_to_msg_id"]) ?
+                            $u["message"]["reply_to_msg_id"] :
+                                null
+                    ),
                     "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
                     "unix_date" => $u["message"]["date"],
                     "message_type" => "photo",
                     "text" => (isset($u["message"]["message"]) ? $u["message"]["message"] : ""),
+                    "pts" => $u["message"]["pts"],
+                    "pts_count" => $u["message"]["pts_count"],
                     "files" => [$file]
                 ]
             );
@@ -241,10 +331,18 @@ class EventHandler extends BaseEventHandler
                 $db->insertPrivateMessage(
                     [
                         "user_id" => $u["message"]["from_id"],
+                        "message_id" => $u["message"]["id"],
+                        "reply_to_msg_id" => (
+                            isset($u["message"]["reply_to_msg_id"]) ?
+                                $u["message"]["reply_to_msg_id"] :
+                                    null
+                        ),
                         "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
                         "unix_date" => $u["message"]["date"],
                         "message_type" => $type,
                         "text" => (isset($u["message"]["message"]) ? $u["message"]["message"] : ""),
+                        "pts" => $u["message"]["pts"],
+                        "pts_count" => $u["message"]["pts_count"],
                         "files" => [$file]
                     ]
                 );
