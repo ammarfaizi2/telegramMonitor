@@ -25,11 +25,12 @@ if (!defined("DEBUG_MODE")) {
 }
 
 require STORAGE_PATH."/tmp/madeline.php";
-
+ob_start();
 $madelineProto = new API(STORAGE_PATH."/telegram_sessions/".$argv[1]);
 $madelineProto->start();
 
 $madelineProto->setEventHandler(
 	EventHandler::class
 );
+ob_get_clean();
 $madelineProto->loop(-1);

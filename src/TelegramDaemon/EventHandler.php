@@ -202,14 +202,17 @@ class EventHandler extends BaseEventHandler
                 $ext = explode(".", $u["message"]["media"]["document"]["attributes"][0]["file_name"]);
                 $ext = strtolower($ext[count($ext) - 1]);
                 $hash = sha1(json_encode($u));
+                $type = "document";
             } else {
                 $hash = sha1(json_encode($u));
                 switch ($u["message"]["media"]["document"]["mime_type"]) {
                     case "image/webp":
                         $ext = "webp";
+                        $type = "sticker";
                         break;
                     case "audio/ogg":
                         $ext = "ogg";
+                        $type = "audio";
                         break;
                     default:
                         $ext = null;
@@ -236,7 +239,7 @@ class EventHandler extends BaseEventHandler
                         "user_id" => $u["message"]["from_id"],
                         "date" => date("Y-m-d H:i:s", $u["message"]["date"]),
                         "unix_date" => $u["message"]["date"],
-                        "message_type" => "photo",
+                        "message_type" => $type,
                         "text" => (isset($u["message"]["message"]) ? $u["message"]["message"] : ""),
                         "files" => [$file]
                     ]
