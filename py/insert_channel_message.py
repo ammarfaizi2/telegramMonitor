@@ -1,4 +1,6 @@
 from init import *
+from bson import ObjectId
+
 import json
 
 realinput = process_stdin()
@@ -15,6 +17,19 @@ if channel == None:
 		"updated_at_unix": None
 	})
 else:
-	print(channel)
+	db.channels.update_one(
+		{
+			"_id": channel["_id"]
+		},
+		{
+			"$inc": { 
+				"msg_count": 1
+			},
+			"$set": {
+				"updated_at": json_input["date"],
+				"updated_at_unix": json_input["unix_date"]
+			}
+		}
+	)
 
-#print(db.channel_messages_data.insert(json_input))
+print(db.channel_messages_data.insert(json_input))
