@@ -83,16 +83,21 @@ class EventHandler extends BaseEventHandler
             }
         }
 
-        $this->messages->sendMessage(
-            [
-                "peer" => $u["message"]["from_id"],
-                "message" => json_encode(
-                    $u,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                ),
-                "reply_to_message_id" => $u["message"]["id"]
-            ]
-        );
+        //
+        // Debug message
+        //
+        // Do not use this in public unless you are running a bot.
+        //
+        // $this->messages->sendMessage(
+        //     [
+        //         "peer" => $u["message"]["from_id"],
+        //         "message" => json_encode(
+        //             $u,
+        //             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        //         ),
+        //         "reply_to_message_id" => $u["message"]["id"]
+        //     ]
+        // );
     }
 
     /**
