@@ -1,5 +1,0 @@
-<?php
-
-require __DIR__."/../config/init.php";
-
-shell_exec("nohup sh -c 'cd ".__DIR__."/..; php bin/telegramd \"{$argv[1]}\" 2>&1 >> ".STORAGE_PATH."/logs/{$argv[1]}.log 2>&1 &' >> /dev/null 2>&1 &");

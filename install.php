@@ -65,6 +65,7 @@ if (is_resource($process)) {
     $return_value = proc_close($process);
 }
 
+installNginx();
 
 function installPip()
 {
@@ -83,3 +84,43 @@ function installPip()
       $return_value = proc_close($process);
   }
 }
+
+function installNginx()
+{
+  $descriptorspec = array(
+     0 => array("pipe", "r"),
+     1 => array("file", "php://stdout", "w+"),
+     2 => array("file", "php://stdout", "w+")
+  );
+
+  unset($_SERVER["argv"]);
+
+  $cwd = __DIR__;
+  $process = proc_open("apt install nginx -y", $descriptorspec, $pipes, $cwd, $_SERVER);
+  if (is_resource($process)) {
+      fclose($pipes[0]);
+      $return_value = proc_close($process);
+  }
+}
+
+
+
+file_put_contents("/etc/nginx/sites-available/telegram_monitor", 'server {
+  listen 4444;
+  
+  root /var/www/telegram_monitor/public;
+  error_log /var/www/telegram_monitor/nginx_error.log;
+  access_log /var/www/telegram_monitor/nginx_access.log;
+
+  index index.php;
+
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+  }
+}');
+
+print shell_exec("ln -svf /etc/nginx/sites-available/telegram_monitor /etc/nginx/sites-enabled/telegram_monitor");
+print shell_exec("ln -svf ".__DIR__." /var/www/telegram_monitor");
+print shell_exec("service nginx restart");
+print shell_exec("systemctl restart nginx");

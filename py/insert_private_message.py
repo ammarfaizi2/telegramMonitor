@@ -1,4 +1,5 @@
 from init import *
+
 import json
 
 realinput = process_stdin()
