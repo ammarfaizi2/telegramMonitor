@@ -54,7 +54,6 @@ class EventHandler extends BaseEventHandler
 
         if ($pid === 0) {
             cli_set_process_title("getUserInfo --user={$u['message']['from_id']}");
-            $db = new Database;
             $vectorOfUser = $this->users->getUsers(
                 [
                     "id" => [
@@ -62,7 +61,15 @@ class EventHandler extends BaseEventHandler
                     ]
                 ]
             );
-            print json_encode($vectorOfUser, 128);
+            $db = new Database;
+            print $db->handleUserInfo(
+                [
+                    "user_id" => $u['message']['from_id'],
+                    "info" => $vectorOfUser,
+                    "date" => date("Y-m-d H:i:s"),
+                    "unix_date" => time()
+                ]
+            );
             exit(0);
         }
         
