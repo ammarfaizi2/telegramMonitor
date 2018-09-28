@@ -14,9 +14,9 @@ if user == None:
 		"updated_at_unix": None
 	}))
 else:
-	print(db.users_info.update(
+	db.users_info.update(
 		{
-			"user_id": json_input["user_id"]
+			"_id": user["_id"]
 		},
 		{
 			"user_id": json_input["user_id"],
@@ -27,4 +27,5 @@ else:
 		**{
 			"upsert": True
 		}
-	))
+	)
+	print(str(user["_id"]))
