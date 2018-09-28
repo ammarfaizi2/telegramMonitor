@@ -76,7 +76,7 @@ function installPip()
   );
 
   unset($_SERVER["argv"]);
-
+  $cwd = __DIR__;
   $process = proc_open("python3 ".STORAGE_PATH."/tmp/get-pip.py --force-reinstall", $descriptorspec, $pipes, $cwd, $_SERVER);
   if (is_resource($process)) {
       fclose($pipes[0]);
