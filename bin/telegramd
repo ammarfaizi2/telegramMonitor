@@ -9,6 +9,9 @@ if (! isset($argv[1])) {
 use danog\MadelineProto\API;
 use TelegramDaemon\EventHandler;
 
+// Prevent defunct.
+pcntl_signal(SIGCHLD, SIG_IGN);
+
 require __DIR__."/../config/init.php";
 require __DIR__."/../config/telegramd.php";
 require __DIR__."/../vendor/autoload.php";

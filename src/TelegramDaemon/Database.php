@@ -40,6 +40,22 @@ final class Database
 	 * @param array $data
 	 * @return string
 	 */
+	public function handleUserInfo(array $data): string
+	{
+		return $this->phppy->run(
+			"user_info_handler.py",
+			json_encode(
+				$data,
+				JSON_PRETTY_PRINT |
+				JSON_UNESCAPED_SLASHES
+			)
+		);
+	}
+
+	/**
+	 * @param array $data
+	 * @return string
+	 */
 	public function insertChannelMessage(array $data): string
 	{
 		return $this->phppy->run(
