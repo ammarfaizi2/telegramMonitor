@@ -227,18 +227,18 @@ class sentistrength:
         # print self.sentences_text
         return {"classified_text":". ".join(self.sentences_score),"tweet_text":". ".join(self.sentences_text),"sentence_score":self.sentences_score,"max_positive":self.sentences_max_pos,"max_negative":self.sentences_max_neg,"kelas":sentence_result}
 
-config = dict()
-config["negation"] = True
-config["booster"]  = True
-config["ungkapan"]  = True
-config["consecutive"]  = True
-config["repeated"]  = True
-config["emoticon"]  = True
-config["question"]  = True
-config["exclamation"]  = True
-config["punctuation"]  = True
-senti = sentistrength(config)
-print senti.main("agnezmo pintar dan cantik sekali tetapi lintah darat :)")
+# config = dict()
+# config["negation"] = True
+# config["booster"]  = True
+# config["ungkapan"]  = True
+# config["consecutive"]  = True
+# config["repeated"]  = True
+# config["emoticon"]  = True
+# config["question"]  = True
+# config["exclamation"]  = True
+# config["punctuation"]  = True
+# senti = sentistrength(config)
+# print senti.main("agnezmo pintar dan cantik sekali tetapi lintah darat :)")
 
 
 
