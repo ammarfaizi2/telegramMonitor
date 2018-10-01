@@ -1,4 +1,10 @@
-<!DOCTYPE html> 
+<?php
+require __DIR__."/../config/init.php";
+require __DIR__."/../vendor/autoload.php";
+
+$tg = new TelegramMonitoringUI;
+
+?><!DOCTYPE html> 
 <!-- 
 Halamn index by Gusti
 -->
@@ -30,7 +36,7 @@ Halamn index by Gusti
         <link href="assets/css/dashboard/dash.style.bundle.css" rel="stylesheet" type="text/css"/>
         <!--end::Base Styles -->
     </head>
-    <!-- end::Head -->     
+    <!-- end::Head -->
     <!-- end::Body -->
     <body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-light m-aside-left--fixed m-aside-left--offcanvas m-aside-left--minimize m-brand--minimize m-footer--push m-aside--offcanvas-default">
         <!-- begin:: Page -->
@@ -401,8 +407,11 @@ Halamn index by Gusti
                     <div>
                         <div>
                             <h3>Account Status</h3>
-                            <table>
-                                
+                            <table border="1" style="border-collapse: collapse;">
+                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">Action</td></tr>
+                                <?php $i = 1; foreach ($tg->getSessions() as $session): ?>
+                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php print $session; ?></td><td align="center">Off</td><td>Stop | Restart</td></tr>
+                                <?php endforeach ?>
                             </table>
                         </div>
                     </div>
