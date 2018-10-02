@@ -63,11 +63,22 @@ class TelegramMonitoringAPI
 			$this->error("\"{$sessionFile}\" does not exists");
 		}
 
-		
+		$pidFile = STORAGE_PATH."/pid/{$_GET['session_name']}.pid";
 
-		// $this->success(
-		// 	shell_exec("ps aux | grep php | grep telegramd | grep ".escapeshellarg($_GET["session_name"])." 2>&1")
-		// );
+		if (file_exists($pidFile)) {
+			$pidData = json_decode(file_get_contents($pidFile), true);
+			if (!is_array($pidData) || $pidData===[]) {
+				$this->success(["status" => "off"]);	
+			}
+			$this->success(
+				[
+					"status" => "on",
+					"pid" => $pidData
+				]
+			);
+		} else {
+			$this->success(["status" => "off"]);
+		}
 	}
 
 	/**

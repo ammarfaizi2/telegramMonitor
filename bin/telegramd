@@ -8,9 +8,6 @@ if (! isset($argv[1])) {
 use danog\MadelineProto\API;
 use TelegramDaemon\EventHandler;
 
-// Prevent defunct.
-pcntl_signal(SIGCHLD, SIG_IGN);
-
 require __DIR__."/../config/init.php";
 require __DIR__."/../config/telegramd.php";
 require __DIR__."/../vendor/autoload.php";
@@ -41,7 +38,7 @@ class PidDesctructor {
 }
 
 $pidData = [];
-$pidFile = STORAGE_PATH."/pid/{$argv[1]}";
+$pidFile = STORAGE_PATH."/pid/{$argv[1]}.pid";
 if (file_exists($pidFile)) {
 	$pidData = json_decode(file_get_contents($pidFile), true);
 	$pidData = is_array($pidData) ? $pidData : [];
@@ -54,10 +51,13 @@ $pidClosure = function () {
 	unset($pidDesctructor);
 };
 
+// Prevent defunct.
+pcntl_signal(SIGCHLD, SIG_IGN);
+
+// Delete pid file.
 pcntl_signal(SIGINT, $pidClosure);
 pcntl_signal(SIGTERM, $pidClosure);
 pcntl_signal(SIGPIPE, $pidClosure);
-
 
 chdir(STORAGE_PATH."/tmp");
 set_include_path(STORAGE_PATH."/tmp");
@@ -78,5 +78,6 @@ $madelineProto->start();
 $madelineProto->setEventHandler(
 	EventHandler::class
 );
+
 DEBUG_MODE or ob_get_clean();
 $madelineProto->loop(-1);
