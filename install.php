@@ -105,7 +105,7 @@ function installNginx()
 
 
 file_put_contents("/etc/nginx/sites-available/telegram_monitor", 'server {
-  listen 4444;
+  listen 55440;
   
   root /var/www/telegram_monitor/public;
   error_log /var/www/telegram_monitor/nginx_error.log;
@@ -122,4 +122,5 @@ file_put_contents("/etc/nginx/sites-available/telegram_monitor", 'server {
 print shell_exec("ln -svf /etc/nginx/sites-available/telegram_monitor /etc/nginx/sites-enabled/telegram_monitor");
 print shell_exec("ln -svf ".__DIR__." /var/www/telegram_monitor");
 print shell_exec("service nginx restart");
-print shell_exec("systemctl restart nginx");
+print shell_exec("systemctl restart nginx 2>&1");
+print shell_exec("systemctl restart php7.2-fpm 2>&1");
