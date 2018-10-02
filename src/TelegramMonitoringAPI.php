@@ -63,25 +63,7 @@ class TelegramMonitoringAPI
 			$this->error("\"{$sessionFile}\" does not exists");
 		}
 
-		$sh = trim(shell_exec("ps aux | grep php | grep telegramd | grep ".escapeshellarg($_GET["session_name"])." 2>&1"));
-		$sh = explode("\n", $sh);
 		
-		if (count($sh) < 2) {
-			$this->success(
-				[
-					"status" => "off"
-				]
-			);
-		} else {
-			$sh[1] = preg_split("/(?:[a-z0-9]+\s+)(\d+)(?:\D+)/Usi", $sh[0]);
-			var_dump($sh[1]);die;
-			$this->success(
-				[
-					"status" => "on",
-					"pid" => (int)$sh[1][1]
-				]
-			);
-		}
 
 		// $this->success(
 		// 	shell_exec("ps aux | grep php | grep telegramd | grep ".escapeshellarg($_GET["session_name"])." 2>&1")
