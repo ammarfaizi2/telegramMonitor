@@ -37,7 +37,9 @@ class TelegramMonitoringAPI
 			case "get_status":
 				$this->getStatus();
 				break;
-			
+			case "run_daemon":
+				$this->runDaemon();
+				break;
 			default:
 				$this->error("Method \"{$this->apiMethod}\" does not exist");
 				break;
@@ -79,6 +81,14 @@ class TelegramMonitoringAPI
 		} else {
 			$this->success(["status" => "off"]);
 		}
+	}
+
+	/**
+	 * @return void
+	 */
+	private function runDaemon(): void
+	{
+		shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']}");
 	}
 
 	/**

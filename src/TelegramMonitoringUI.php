@@ -28,6 +28,13 @@ class TelegramMonitoringUI
 	 */
 	public function getSessions(): array
 	{
+		$results = [];
+		foreach ($this->sessions as $v) {
+			$results[] = [
+				"name" => $v,
+				"status" => 
+			];
+		}
 		return $this->sessions;
 	}
 }

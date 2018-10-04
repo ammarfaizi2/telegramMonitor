@@ -410,14 +410,23 @@ Halamn index by Gusti
                             <table border="1" style="border-collapse: collapse;">
                                 <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">Action</td></tr>
                                 <?php $i = 1; foreach ($tg->getSessions() as $session): ?>
-                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php print $session; ?></td><td align="center">Off</td><td>Stop | Restart</td></tr>
+                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php print $session["name"]; ?></td><td align="center"><?php print $session["status"]; ?></td><td></td></tr>
+                                    <script type="text/javascript">
+                                        $.ajax({
+                                            url: "http://127.0.0.1:55440/api.php?method=get_status&session_name=<?php print urlencode($session); ?>",
+                                            method: "GET",
+                                            success: function (r) {
+                                                alert(JSON.stringify(r));
+                                            }
+                                        });
+                                    </script>
                                 <?php endforeach ?>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer class="m-grid__item		m-footer ">
+            <footer class="m-grid__item	m-footer">
                 <div class="m-container m-container--fluid m-container--full-height m-page__container">
                     <div class="m-stack m-stack--flex-tablet-and-mobile m-stack--ver m-stack--desktop">
                         <div class="m-stack__item m-stack__item--left m-stack__item--middle m-stack__item--last">
