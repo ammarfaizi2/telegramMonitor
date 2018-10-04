@@ -50,7 +50,7 @@ class EventHandler extends BaseEventHandler
             mkdir(STORAGE_PATH."/tmp/files");
         }
 
-        $pid = pcntl_fork();
+        // $pid = pcntl_fork();
 
         if ($pid === 0) {
             cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
@@ -73,9 +73,10 @@ class EventHandler extends BaseEventHandler
             exit(0);
         }
 
-        $pid = pcntl_fork();
+        // $pid = pcntl_fork();
 
         if ($pid === 0) {
+            print "Processing channel info...\n";
             cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
             $vectorOfChannel = $this->users->getUsers(
                 [
@@ -93,6 +94,7 @@ class EventHandler extends BaseEventHandler
                     "unix_date" => time()
                 ]
             );
+            var_dump(123);
             exit(0);
         }
         
