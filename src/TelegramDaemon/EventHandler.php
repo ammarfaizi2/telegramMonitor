@@ -101,6 +101,29 @@ class EventHandler extends BaseEventHandler
         if (!file_exists(STORAGE_PATH."/tmp/files")) {
             mkdir(STORAGE_PATH."/tmp/files");
         }
+        
+        $pid = pcntl_fork();
+
+        if ($pid === 0) {
+            cli_set_process_title("getUserInfo --user={$u['message']['from_id']}");
+            $vectorOfUser = $this->users->getUsers(
+                [
+                    "id" => [
+                        "user#{$u['message']['from_id']}"
+                    ]
+                ]
+            );
+            $db = new Database;
+            print $db->handleUserInfo(
+                [
+                    "user_id" => $u['message']['from_id'],
+                    "info" => $vectorOfUser,
+                    "date" => date("Y-m-d H:i:s"),
+                    "unix_date" => time()
+                ]
+            );
+            exit(0);
+        }
 
         if ($u["_"] === "updateNewMessage") {
             DEBUG_MODE or ob_end_clean();

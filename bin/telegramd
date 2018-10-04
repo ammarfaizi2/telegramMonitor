@@ -33,7 +33,14 @@ class PidDesctructor {
 	 */
 	public function __destruct()
 	{
-		unlink($this->pidFile);
+		$myPid = getmypid();
+		if (file_exists($this->pidFile)) {
+			$pidList = json_decode(file_get_contents($this->pidFile), true);
+			if (is_array($pidList) && in_array($myPid, $pidList)) {
+				print "Deleting pid file {$this->pidFile}...\n";
+				unlink($this->pidFile);
+			}
+		}
 	}
 }
 
