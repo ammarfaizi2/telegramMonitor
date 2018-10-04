@@ -5,6 +5,7 @@ import json
 realinput = process_stdin()
 json_input = json.loads(realinput)
 
+## User
 user = db.users.find_one({"user_id": json_input["user_id"]})
 if user == None:
 	db.users.insert({
