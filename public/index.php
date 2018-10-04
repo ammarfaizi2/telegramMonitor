@@ -407,21 +407,38 @@ Halamn index by Gusti
                     <div>
                         <div>
                             <h3>Account Status</h3>
-                            <table border="1" style="border-collapse: collapse;">
-                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">Action</td></tr>
-                                <?php $i = 1; foreach ($tg->getSessions() as $session): ?>
-                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php print $session["name"]; ?></td><td align="center"><?php print $session["status"]; ?></td><td></td></tr>
-                                    <script type="text/javascript">
-                                        $.ajax({
-                                            url: "http://127.0.0.1:55440/api.php?method=get_status&session_name=<?php print urlencode($session); ?>",
-                                            method: "GET",
-                                            success: function (r) {
+                            <script type="text/javascript">
+                                function getUserStatus(session_name, td_id) {
+                                    $.ajax({
+                                        url: "http://127.0.0.1:55440/api.php?method=get_status&session_name="+session_name,
+                                        method: "GET",
+                                        success: function (r) {
+                                            if(r["status"] === "success") {
+                                                var pid = document.getElementById("pid_"+td_id);
+                                                td_id = document.getElementById(td_id);
+                                                if (r["message"]["status"] == "off") {
+                                                    td_id.innerHTML = "Off";
+                                                    pid.innerHTML = "-";
+                                                } else {
+                                                    td_id.innerHTML = "On";
+                                                    pid.innerHTML = r["message"]["pid"][0];
+                                                }
+                                            } else {
                                                 alert(JSON.stringify(r));
                                             }
-                                        });
-                                    </script>
-                                <?php endforeach ?>
+                                        }
+                                    });
+                                }
+                            </script>
+                            <table border="1" style="border-collapse: collapse;">
+                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">PID</td><td align="center">Action</td></tr>
+                                <?php $i = 1; $callback = ""; foreach ($tg->getSessions() as $key => $session): ?>
+                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php $callback .= "getUserStatus(\"{$session['name']}\", \"td_{$key}\");"; print $session["name"]; ?></td><td align="center" id="<?php print "td_{$key}"; ?>"></td><td align="center" id="<?php print "pid_td_{$key}"; ?>" style="padding-right: 10px; padding-left: 10px;"></td><td id="<?php print "btn_td_{$key}"; ?>"></td></tr>
+                                <?php endforeach; ?>
                             </table>
+                            <script type="text/javascript">
+                                <?php print $callback; ?>
+                            </script>
                         </div>
                     </div>
                 </div>

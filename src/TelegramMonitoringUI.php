@@ -31,10 +31,10 @@ class TelegramMonitoringUI
 		$results = [];
 		foreach ($this->sessions as $v) {
 			$results[] = [
-				"name" => $v,
-				"status" => 
+				"name" => $v
 			];
 		}
-		return $this->sessions;
+
+		return $results;
 	}
 }
