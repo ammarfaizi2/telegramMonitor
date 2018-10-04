@@ -56,6 +56,22 @@ final class Database
 	 * @param array $data
 	 * @return string
 	 */
+	public function handleChannelInfo(array $data): string
+	{
+		return $this->phppy->run(
+			"channel_info_handler.py",
+			json_encode(
+				$data,
+				JSON_PRETTY_PRINT |
+				JSON_UNESCAPED_SLASHES
+			)
+		);
+	}
+
+	/**
+	 * @param array $data
+	 * @return string
+	 */
 	public function insertChannelMessage(array $data): string
 	{
 		return $this->phppy->run(

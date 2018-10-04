@@ -53,7 +53,7 @@ class EventHandler extends BaseEventHandler
         $pid = pcntl_fork();
 
         if ($pid === 0) {
-            cli_set_process_title("getUserInfo --user={$u['message']['from_id']}");
+            cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
             $vectorOfUser = $this->users->getUsers(
                 [
                     "id" => [
@@ -66,6 +66,29 @@ class EventHandler extends BaseEventHandler
                 [
                     "user_id" => $u['message']['from_id'],
                     "info" => $vectorOfUser,
+                    "date" => date("Y-m-d H:i:s"),
+                    "unix_date" => time()
+                ]
+            );
+            exit(0);
+        }
+
+        $pid = pcntl_fork();
+
+        if ($pid === 0) {
+            cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
+            $vectorOfChannel = $this->users->getUsers(
+                [
+                    "id" => [
+                        "channel#{$u['message']['to_id']['channel_id']}"
+                    ]
+                ]
+            );
+            $db = new Database;
+            print $db->handleChannelInfo(
+                [
+                    "channel_id" => $u['message']['to_id']['channel_id'],
+                    "info" => $vectorOfChannel,
                     "date" => date("Y-m-d H:i:s"),
                     "unix_date" => time()
                 ]

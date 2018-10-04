@@ -5,21 +5,21 @@ import json
 realinput = process_stdin()
 json_input = json.loads(realinput)
 
-user = db.users_info.find_one({"user_id": json_input["user_id"]})
-if user == None:
-	print(db.users_info.insert({
-		"user_id": json_input["user_id"],
+channel = db.channels_info.find_one({"channel_id": json_input["channel_id"]})
+if channel == None:
+	print(db.channels_info.insert({
+		"channel_id": json_input["channel_id"],
 		"info": json_input["info"],
 		"updated_at": None,
 		"updated_at_unix": None
 	}))
 else:
-	db.users_info.update(
+	db.channels_info.update(
 		{
-			"_id": user["_id"]
+			"_id": channel["_id"]
 		},
 		{
-			"user_id": json_input["user_id"],
+			"channel_id": json_input["channel_id"],
 			"info": json_input["info"],
 			"updated_at": json_input["date"],
 			"updated_at_unix": json_input["unix_date"]
@@ -28,4 +28,4 @@ else:
 			"upsert": True
 		}
 	)
-	print(str(user["_id"]))
+	print(str(channel["_id"]))
