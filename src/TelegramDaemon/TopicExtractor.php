@@ -32,6 +32,7 @@ class TopicExtractor
 	 */
 	public function extract(): string
 	{
+		$this->text = preg_replace("/[^a-zA-Z0-9\s\-\']/Usi", " ", $this->text);
 		foreach (self::VERBS_IGNORE as $verb) {
 			$this->text = preg_replace(
 				"/(?:^|\s|\n){$verb}(?:$|\s|\n)/Usi",
@@ -44,6 +45,6 @@ class TopicExtractor
 			$this->text = str_replace("  ", " ", $this->text, $n);
 		} while ($n);
 
-		return $this->text;
+		return trim($this->text);
 	}
 }
