@@ -50,28 +50,30 @@ class EventHandler extends BaseEventHandler
             mkdir(STORAGE_PATH."/tmp/files");
         }
 
+        $pid = 0;
+
         // $pid = pcntl_fork();
 
-        if ($pid === 0) {
-            cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
-            $vectorOfUser = $this->users->getUsers(
-                [
-                    "id" => [
-                        "user#{$u['message']['from_id']}"
-                    ]
-                ]
-            );
-            $db = new Database;
-            print $db->handleUserInfo(
-                [
-                    "user_id" => $u['message']['from_id'],
-                    "info" => $vectorOfUser,
-                    "date" => date("Y-m-d H:i:s"),
-                    "unix_date" => time()
-                ]
-            );
-            exit(0);
-        }
+        // if ($pid === 0) {
+        //     cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
+        //     $vectorOfUser = $this->users->getUsers(
+        //         [
+        //             "id" => [
+        //                 "user#{$u['message']['from_id']}"
+        //             ]
+        //         ]
+        //     );
+        //     $db = new Database;
+        //     print $db->handleUserInfo(
+        //         [
+        //             "user_id" => $u['message']['from_id'],
+        //             "info" => $vectorOfUser,
+        //             "date" => date("Y-m-d H:i:s"),
+        //             "unix_date" => time()
+        //         ]
+        //     );
+        //     exit(0);
+        // }
 
         // $pid = pcntl_fork();
 
