@@ -95,6 +95,9 @@ trait HandlerTrait
                 $u["message"]["message"] !== ""
             ) {
                 $db = new Database;
+                $py2 = new PhpPy2;
+                $sentiment = trim($py2->run("sentistrength_id.py", $u["message"]["message"]));
+                print $sentiment."\n\n";
                 print $db->insertPrivateMessage(
                     $a = [
                         "user_id" => $u["message"]["from_id"],
@@ -108,6 +111,7 @@ trait HandlerTrait
                         "unix_date" => $u["message"]["date"],
                         "message_type" => "text",
                         "text" => $u["message"]["message"],
+                        "sentiment" => json_decode($sentiment, true),
                         "pts" => $u["pts"],
                         "pts_count" => $u["pts_count"],
                         "files" => []
