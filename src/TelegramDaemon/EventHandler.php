@@ -52,53 +52,53 @@ class EventHandler extends BaseEventHandler
 
         $pid = 0;
 
-        // $pid = pcntl_fork();
-
-        // if ($pid === 0) {
-        //     cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
-        //     $vectorOfUser = $this->users->getUsers(
-        //         [
-        //             "id" => [
-        //                 "user#{$u['message']['from_id']}"
-        //             ]
-        //         ]
-        //     );
-        //     $db = new Database;
-        //     print $db->handleUserInfo(
-        //         [
-        //             "user_id" => $u['message']['from_id'],
-        //             "info" => $vectorOfUser,
-        //             "date" => date("Y-m-d H:i:s"),
-        //             "unix_date" => time()
-        //         ]
-        //     );
-        //     exit(0);
-        // }
-
-        // $pid = pcntl_fork();
+        $pid = pcntl_fork();
 
         if ($pid === 0) {
-            print "Processing channel info...\n";
-            cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
-            $vectorOfChannel = $this->users->getUsers(
+            cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
+            $vectorOfUser = $this->users->getUsers(
                 [
                     "id" => [
-                        "channel#{$u['message']['to_id']['channel_id']}"
+                        "user#{$u['message']['from_id']}"
                     ]
                 ]
             );
             $db = new Database;
-            print $db->handleChannelInfo(
+            print $db->handleUserInfo(
                 [
-                    "channel_id" => $u['message']['to_id']['channel_id'],
-                    "info" => $vectorOfChannel,
+                    "user_id" => $u['message']['from_id'],
+                    "info" => $vectorOfUser,
                     "date" => date("Y-m-d H:i:s"),
                     "unix_date" => time()
                 ]
             );
-            var_dump(123);
             exit(0);
         }
+
+        // $pid = pcntl_fork();
+        //
+        // if ($pid === 0) {
+        //     print "Processing channel info...\n";
+        //     cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
+        //     $vectorOfChannel = $this->users->getUsers(
+        //         [
+        //             "id" => [
+        //                 "chat#{$u['message']['to_id']['channel_id']}"
+        //             ]
+        //         ]
+        //     );
+        //     $db = new Database;
+        //     print $db->handleChannelInfo(
+        //         [
+        //             "channel_id" => $u['message']['to_id']['channel_id'],
+        //             "info" => $vectorOfChannel,
+        //             "date" => date("Y-m-d H:i:s"),
+        //             "unix_date" => time()
+        //         ]
+        //     );
+        //     var_dump(123);
+        //     exit(0);
+        // }
         
         if ($u["_"] === "updateNewChannelMessage") {
             DEBUG_MODE or ob_end_clean();
