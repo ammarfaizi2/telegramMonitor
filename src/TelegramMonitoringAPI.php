@@ -40,6 +40,9 @@ class TelegramMonitoringAPI
 			case "run_daemon":
 				$this->runDaemon();
 				break;
+			case "kill_daemon":
+				$this->killDaemon();
+				break;
 			default:
 				$this->error("Method \"{$this->apiMethod}\" does not exist");
 				break;
@@ -86,8 +89,81 @@ class TelegramMonitoringAPI
 	/**
 	 * @return void
 	 */
+	private function killDaemon(): void
+	{
+		if (!isset($_GET["session_name"])) {
+			$this->error("You need to provide the \"session_name\" parameter");
+		}
+
+		$sessionFile = STORAGE_PATH."/telegram_sessions/".$_GET["session_name"];
+
+		if (!file_exists($sessionFile)) {
+			$this->error("\"{$sessionFile}\" does not exists");
+		}
+
+		$pidFile = STORAGE_PATH."/pid/{$_GET['session_name']}.pid";
+
+		$started = true;
+
+		if (file_exists($pidFile)) {
+			$pidData = json_decode(file_get_contents($pidFile), true);
+			if (!is_array($pidData) || $pidData===[]) {
+				$started = false;
+				$msg = "There is no process to be killed";
+			} else {
+				$msg = count($pidData)." processes has been killed";
+				foreach ($pidData as $pid) {
+					for ($i=0; $i < 10; $i++) {
+						shell_exec("nohup kill {$pid} >> /dev/null 2>&1 &");
+					}
+				}				
+			}
+		} else {
+			$started = false;
+			$msg = "There is no process to be killed";
+		}
+
+		if ($started) {
+			
+		}
+
+		$out = "Could not kill the daemon";
+
+		if (!file_exists($pidFile)) {
+			$this->success(
+				[
+					"status" => "success",
+					"message" => $msg
+				]
+			);
+		} else {
+			if (!is_array($pidData) || $pidData===[]) {
+				unlink($pidFile);
+				$this->success(
+					[
+						"status" => "success",
+						"message" => $msg
+					]
+				);
+			}
+			$this->success(
+				[
+					"status" => "failed",
+					"out" => $out
+				]
+			);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
 	private function runDaemon(): void
 	{
+		if (!isset($_GET["session_name"])) {
+			$this->error("You need to provide the \"session_name\" parameter");
+		}
+
 		$sessionFile = STORAGE_PATH."/telegram_sessions/".$_GET["session_name"];
 
 		if (!file_exists($sessionFile)) {
@@ -112,6 +188,9 @@ class TelegramMonitoringAPI
 				
 			// Give some delay to wait it reaches the pid handler.
 			sleep(3);
+			$msg = "Starting daemon success!";
+		} else {
+			$msg = "No action to daemon starter since the daemon has already been started!";
 		}
 		
 		if (file_exists($pidFile)) {
