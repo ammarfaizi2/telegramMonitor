@@ -410,7 +410,7 @@ Halamn index by Gusti
                             <script type="text/javascript">
                                 function getUserStatus(session_name, td_id) {
                                     $.ajax({
-                                        url: "http://127.0.0.1:55440/api.php?method=get_status&session_name="+session_name,
+                                        url: "/api.php?method=get_status&session_name="+session_name,
                                         method: "GET",
                                         success: function (r) {
                                             if(r["status"] === "success") {
@@ -431,7 +431,7 @@ Halamn index by Gusti
                                 }
                             </script>
                             <table border="1" style="border-collapse: collapse;">
-                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">PID</td><td align="center">Action</td></tr>
+                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center">PID</td><td alig//tr>
                                 <?php $i = 1; $callback = ""; foreach ($tg->getSessions() as $key => $session): ?>
                                     <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php $callback .= "getUserStatus(\"{$session['name']}\", \"td_{$key}\");"; print $session["name"]; ?></td><td align="center" id="<?php print "td_{$key}"; ?>"></td><td align="center" id="<?php print "pid_td_{$key}"; ?>" style="padding-right: 10px; padding-left: 10px;"></td><td id="<?php print "btn_td_{$key}"; ?>"></td></tr>
                                 <?php endforeach; ?>
