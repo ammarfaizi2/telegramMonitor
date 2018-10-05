@@ -46,77 +46,77 @@ class EventHandler extends BaseEventHandler
      */
     public function onUpdateNewChannelMessage(array $u): void
     {
-        if (!file_exists(STORAGE_PATH."/tmp/files")) {
-            mkdir(STORAGE_PATH."/tmp/files");
-        }
+        // if (!file_exists(STORAGE_PATH."/tmp/files")) {
+        //     mkdir(STORAGE_PATH."/tmp/files");
+        // }
 
-        $pid = 0;
-
-        $pid = pcntl_fork();
-
-        if ($pid === 0) {
-            cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
-            $vectorOfUser = $this->users->getUsers(
-                [
-                    "id" => [
-                        "user#{$u['message']['from_id']}"
-                    ]
-                ]
-            );
-            $db = new Database;
-            print $db->handleUserInfo(
-                [
-                    "user_id" => $u['message']['from_id'],
-                    "info" => $vectorOfUser,
-                    "date" => date("Y-m-d H:i:s"),
-                    "unix_date" => time()
-                ]
-            );
-            exit(0);
-        }
+        // $pid = 0;
 
         // $pid = pcntl_fork();
-        //
+
         // if ($pid === 0) {
-        //     print "Processing channel info...\n";
-        //     cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
-        //     $vectorOfChannel = $this->users->getUsers(
+        //     cli_set_process_title("getUserInfo --user-id={$u['message']['from_id']}");
+        //     $vectorOfUser = $this->users->getUsers(
         //         [
         //             "id" => [
-        //                 "chat#{$u['message']['to_id']['channel_id']}"
+        //                 "user#{$u['message']['from_id']}"
         //             ]
         //         ]
         //     );
         //     $db = new Database;
-        //     print $db->handleChannelInfo(
+        //     print $db->handleUserInfo(
         //         [
-        //             "channel_id" => $u['message']['to_id']['channel_id'],
-        //             "info" => $vectorOfChannel,
+        //             "user_id" => $u['message']['from_id'],
+        //             "info" => $vectorOfUser,
         //             "date" => date("Y-m-d H:i:s"),
         //             "unix_date" => time()
         //         ]
         //     );
-        //     var_dump(123);
         //     exit(0);
         // }
+
+        // // $pid = pcntl_fork();
+        // //
+        // // if ($pid === 0) {
+        // //     print "Processing channel info...\n";
+        // //     cli_set_process_title("getChannelInfo --channel-id={$u['message']['from_id']}");
+        // //     $vectorOfChannel = $this->users->getUsers(
+        // //         [
+        // //             "id" => [
+        // //                 "chat#{$u['message']['to_id']['channel_id']}"
+        // //             ]
+        // //         ]
+        // //     );
+        // //     $db = new Database;
+        // //     print $db->handleChannelInfo(
+        // //         [
+        // //             "channel_id" => $u['message']['to_id']['channel_id'],
+        // //             "info" => $vectorOfChannel,
+        // //             "date" => date("Y-m-d H:i:s"),
+        // //             "unix_date" => time()
+        // //         ]
+        // //     );
+        // //     var_dump(123);
+        // //     exit(0);
+        // // }
         
-        if ($u["_"] === "updateNewChannelMessage") {
-            DEBUG_MODE or ob_end_clean();
+        // if ($u["_"] === "updateNewChannelMessage") {
+        //     DEBUG_MODE or ob_end_clean();
 
-            if ($u["message"]["from_id"] != USER_ID) {
+        //     if ($u["message"]["from_id"] != USER_ID) {
 
-                print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
+        //         print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
 
-                DEBUG_MODE or ob_start();
-                $this->channelMsgHandle($u);
+        //         DEBUG_MODE or ob_start();
+        //         $this->channelMsgHandle($u);
 
-            } else {
-                printf("Skipping...\n");
-            }
+        //     } else {
+        //         printf("Skipping...\n");
+        //     }
            
-            DEBUG_MODE or ob_end_clean();
-            DEBUG_MODE or ob_start();
-        }
+        //     DEBUG_MODE or ob_end_clean();
+        //     DEBUG_MODE or ob_start();
+        // }
     }
 
     /**
@@ -125,49 +125,49 @@ class EventHandler extends BaseEventHandler
      */
     public function onUpdateNewMessage(array $u): void
     {
-        if (!file_exists(STORAGE_PATH."/tmp/files")) {
-            mkdir(STORAGE_PATH."/tmp/files");
-        }
+        // if (!file_exists(STORAGE_PATH."/tmp/files")) {
+        //     mkdir(STORAGE_PATH."/tmp/files");
+        // }
         
-        $pid = pcntl_fork();
+        // $pid = pcntl_fork();
 
-        if ($pid === 0) {
-            cli_set_process_title("getUserInfo --user={$u['message']['from_id']}");
-            $vectorOfUser = $this->users->getUsers(
-                [
-                    "id" => [
-                        "user#{$u['message']['from_id']}"
-                    ]
-                ]
-            );
-            $db = new Database;
-            print $db->handleUserInfo(
-                [
-                    "user_id" => $u['message']['from_id'],
-                    "info" => $vectorOfUser,
-                    "date" => date("Y-m-d H:i:s"),
-                    "unix_date" => time()
-                ]
-            );
-            exit(0);
-        }
+        // if ($pid === 0) {
+        //     cli_set_process_title("getUserInfo --user={$u['message']['from_id']}");
+        //     $vectorOfUser = $this->users->getUsers(
+        //         [
+        //             "id" => [
+        //                 "user#{$u['message']['from_id']}"
+        //             ]
+        //         ]
+        //     );
+        //     $db = new Database;
+        //     print $db->handleUserInfo(
+        //         [
+        //             "user_id" => $u['message']['from_id'],
+        //             "info" => $vectorOfUser,
+        //             "date" => date("Y-m-d H:i:s"),
+        //             "unix_date" => time()
+        //         ]
+        //     );
+        //     exit(0);
+        // }
 
-        if ($u["_"] === "updateNewMessage") {
-            DEBUG_MODE or ob_end_clean();
+        // if ($u["_"] === "updateNewMessage") {
+        //     DEBUG_MODE or ob_end_clean();
             
-            DEBUG_MODE or ob_start();
+        //     DEBUG_MODE or ob_start();
 
-            if ($u["message"]["from_id"] != USER_ID) {
+        //     if ($u["message"]["from_id"] != USER_ID) {
                 
-                print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
+        //         print json_encode($u, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n\n";
 
-                $this->privateMsgHandle($u);
-            } else {
-                printf("Skipping...\n");
-            }
+        //         $this->privateMsgHandle($u);
+        //     } else {
+        //         printf("Skipping...\n");
+        //     }
            
-            DEBUG_MODE or ob_end_clean();
-            DEBUG_MODE or ob_start();
-        }
+        //     DEBUG_MODE or ob_end_clean();
+        //     DEBUG_MODE or ob_start();
+        // }
     }
 }

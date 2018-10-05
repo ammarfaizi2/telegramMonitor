@@ -25,7 +25,21 @@ class TelegramMonitoringAPI
 			$this->error("\"method\" parameter must be a string");
 		}
 
+
 		$this->apiMethod = trim(strtolower($_GET["method"]));
+		
+		if (isset($_GET["session_name"])) {
+			$pidFile = STORAGE_PATH."/pid/{$_GET['session_name']}.pid";
+			if (file_exists($pidFile)) {
+				$pidData = json_decode(file_get_contents($pidFile), true);
+				if (is_array($pidData) && $pidData!==[]) {
+					$sh = trim(shell_exec("ps aux | grep {$pidData[0]}"));
+					if (count(explode("\n", $sh)) < 3) {
+						unlink($pidFile);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -113,10 +127,11 @@ class TelegramMonitoringAPI
 			} else {
 				$msg = count($pidData)." processes has been killed";
 				foreach ($pidData as $pid) {
-					for ($i=0; $i < 10; $i++) {
-						shell_exec("nohup kill {$pid} >> /dev/null 2>&1 &");
+					for ($i=0; $i < 5; $i++) {
+						shell_exec("nohup kill -TERM {$pid} >> /dev/null 2>&1");
 					}
-				}				
+				}
+				sleep(1);
 			}
 		} else {
 			$started = false;
@@ -187,7 +202,7 @@ class TelegramMonitoringAPI
 			$out = shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 2>&1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']} 2>&1 &");
 				
 			// Give some delay to wait it reaches the pid handler.
-			sleep(3);
+			sleep(1);
 			$msg = "Starting daemon success!";
 		} else {
 			$msg = "No action to daemon starter since the daemon has already been started!";
