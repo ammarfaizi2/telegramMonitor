@@ -88,8 +88,32 @@ class TelegramMonitoringAPI
 	 */
 	private function runDaemon(): void
 	{
-		$out = shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 2>&1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']} 2>&1 &");
+		$sessionFile = STORAGE_PATH."/telegram_sessions/".$_GET["session_name"];
+
+		if (!file_exists($sessionFile)) {
+			$this->error("\"{$sessionFile}\" does not exists");
+		}
+
 		$pidFile = STORAGE_PATH."/pid/{$_GET['session_name']}.pid";
+
+		$start = false;
+
+		if (file_exists($pidFile)) {
+			$pidData = json_decode(file_get_contents($pidFile), true);
+			if (!is_array($pidData) || $pidData===[]) {
+				$start = true;
+			}
+		} else {
+			$start = true;
+		}
+
+		if ($start) {
+			$out = shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 2>&1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']} 2>&1 &");
+				
+			// Give some delay to wait it reaches the pid handler.
+			sleep(3);
+		}
+		
 		if (file_exists($pidFile)) {
 			$pidData = json_decode(file_get_contents($pidFile), true);
 			if (!is_array($pidData) || $pidData===[]) {
@@ -98,6 +122,7 @@ class TelegramMonitoringAPI
 			$this->success(
 				[
 					"status" => "success",
+					"message" => $msg,
 					"pid" => $pidData
 				]
 			);
