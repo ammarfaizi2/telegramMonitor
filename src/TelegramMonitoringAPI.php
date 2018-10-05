@@ -88,7 +88,27 @@ class TelegramMonitoringAPI
 	 */
 	private function runDaemon(): void
 	{
-		shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']}");
+		$out = shell_exec("nohup /usr/bin/php7.2 ".BASEPATH."/bin/telegramd ".escapeshellarg($_GET["session_name"])." --daemonize --telegram-daemon --no-tty -f 1 2>&1 >> ".BASEPATH."/storage/logs/{$_GET['session_name']} 2>&1 &");
+		$pidFile = STORAGE_PATH."/pid/{$_GET['session_name']}.pid";
+		if (file_exists($pidFile)) {
+			$pidData = json_decode(file_get_contents($pidFile), true);
+			if (!is_array($pidData) || $pidData===[]) {
+				$this->success(["status" => "off"]);	
+			}
+			$this->success(
+				[
+					"status" => "success",
+					"pid" => $pidData
+				]
+			);
+		} else {
+			$this->success(
+				[
+					"status" => "failed",
+					"out" => $out
+				]
+			);
+		}
 	}
 
 	/**

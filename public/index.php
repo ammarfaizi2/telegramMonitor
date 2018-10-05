@@ -406,7 +406,7 @@ Halamn index by Gusti
                     </div>
                     <div>
                         <div>
-                            <h3>Account Status</h3>
+                            <h3>Account Control</h3>
                             <script type="text/javascript">
                                 function getUserStatus(session_name, td_id) {
                                     $.ajax({

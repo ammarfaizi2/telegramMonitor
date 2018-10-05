@@ -41,6 +41,7 @@ class PidDesctructor {
 				unlink($this->pidFile);
 			}
 		}
+		exit(0);
 	}
 }
 
@@ -56,6 +57,7 @@ $pidDesctructor = new PidDesctructor($pidFile);
 $pidClosure = function () {
 	global $pidDesctructor;
 	unset($pidDesctructor);
+	exit;
 };
 
 // Prevent defunct.
@@ -76,7 +78,7 @@ if (!file_exists(STORAGE_PATH."/tmp/madeline.php")) {
 if (!defined("DEBUG_MODE")) {
     define("DEBUG_MODE", true);
 }
-
+sleep(10000000);
 require STORAGE_PATH."/tmp/madeline.php";
 DEBUG_MODE or ob_start();
 $madelineProto = new API(STORAGE_PATH."/telegram_sessions/".$argv[1]);
