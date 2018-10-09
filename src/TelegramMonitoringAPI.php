@@ -128,7 +128,7 @@ class TelegramMonitoringAPI
 				$msg = count($pidData)." processes has been killed";
 				foreach ($pidData as $pid) {
 					for ($i=0; $i < 5; $i++) {
-						shell_exec("nohup kill -TERM {$pid} >> /dev/null 2>&1");
+						shell_exec("nohup kill -KILL {$pid} >> /dev/null 2>&1");
 					}
 				}
 				sleep(1);

@@ -2,6 +2,8 @@
 
 namespace TelegramDaemon;
 
+declare(ticks=1);
+
 use danog\MadelineProto\EventHandler as BaseEventHandler;
 
 defined("DEBUG_MODE") or define("DEBUG_MODE", true);

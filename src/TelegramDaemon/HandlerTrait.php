@@ -1,7 +1,7 @@
 <?php
 
 namespace TelegramDaemon;
-
+declare(ticks=1);
 use PhpPy\PhpPy2;
 use danog\MadelineProto\EventHandler as BaseEventHandler;
 
