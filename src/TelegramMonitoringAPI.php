@@ -1,5 +1,7 @@
 <?php
 
+use TelegramDaemon\Database;
+
 /**
  * @author Ammar Faizi <ammarfaizi2@gmail.com>
  * @license MIT
@@ -61,6 +63,17 @@ class TelegramMonitoringAPI
 				$this->error("Method \"{$this->apiMethod}\" does not exist");
 				break;
 		}
+	}
+
+	/**
+	 * @return void
+	 */
+	private function channelTopicCount(): void
+	{
+		$db = new Database;
+		$a = $db->channelTopicCount(time() - (3600 * 7), time());
+		print $a;
+		exit;
 	}
 
 	/**

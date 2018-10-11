@@ -406,103 +406,34 @@ Halamn index by Gusti
                     </div>
                     <div>
                         <style type="text/css">
-                            .account_control {
+                            .wq_inline {
+                                margin-top: 20px;
+                                display: inline-block;
+                                border: 1px solid #000;
+                                margin-left: 20px;
                                 font-family: Arial;
                             }
                         </style>
-                        <div class="account_control">
+                        <div class="account_control wq_inline">
                             <h3>Account Control</h3>
                             <h5>Connection Status: <span id="connection_status">Idle</span></h5>
-                            <div style="margin-bottom: 5px;">
+                            <div>
                                 <a href="logind.php" target="_blank"><button style="cursor: pointer;">Add New Account</button></a>
                             </div>
-                            <script type="text/javascript">
-                                function getUserStatus(session_name, td_id) {
-                                    var con = document.getElementById("connection_status");
-                                    con.innerHTML = "Getting user status...";
-                                    $.ajax({
-                                        url: "/api.php?method=get_status&session_name="+session_name,
-                                        method: "GET",
-                                        success: function (r) {
-                                            if(r["status"] === "success") {
-                                                var pid = document.getElementById("pid_"+td_id),
-                                                    btn = document.getElementById("btn_"+td_id);
-                                                btn.innerHTML = "";
-                                                ztd_id = document.getElementById(td_id);
-                                                if (r["message"]["status"] == "off") {
-                                                    ztd_id.innerHTML = "Off";
-                                                    pid.innerHTML = "-";
-                                                    var start = document.createElement("button"),
-                                                    sttext = document.createTextNode("Start");
-                                                    start.append(sttext);
-                                                    start.setAttribute("id", td_id+"_start");
-                                                    start.setAttribute("onclick", "start(\""+session_name+"\", \""+td_id+"\");");
-                                                    start.setAttribute("style", "cursor:pointer;");
-                                                    btn.append(start);
-                                                } else {
-                                                    ztd_id.innerHTML = "On";
-                                                    pid.innerHTML = r["message"]["pid"][0];
-                                                    var stop = document.createElement("button"),
-                                                    sttext = document.createTextNode("Stop");
-                                                    stop.append(sttext);
-                                                    stop.setAttribute("id", td_id+"_stop");
-                                                    stop.setAttribute("onclick", "stop(\""+session_name+"\", \""+td_id+"\")");
-                                                    stop.setAttribute("style", "cursor:pointer;");
-                                                    btn.append(stop);
-                                                }
-                                            } else {
-                                                alert(JSON.stringify(r));
-                                            }
-                                            con.innerHTML = "idle";
-                                        }
-                                    });
-                                }
-
-                                function start(session_name, id)
-                                {
-                                    var con = document.getElementById("connection_status"),
-                                    q = document.getElementById(id+"_start");
-                                    q.disabled = 1;
-                                    con.innerHTML = "Starting "+session_name+"...";
-                                    $.ajax({
-                                        url: "/api.php?method=run_daemon&session_name="+session_name,
-                                        method: "GET",
-                                        success: function (r) {
-                                            recallback();
-                                            con.innerHTML = "Idle";
-                                        }
-                                    });
-                                }
-
-                                function stop(session_name, id)
-                                {
-                                    var con = document.getElementById("connection_status");
-                                    con.innerHTML = "Stopping "+session_name+"...";
-                                    var q = document.getElementById(id+"_stop");
-                                    q.disabled = 1;
-                                    $.ajax({
-                                        url: "/api.php?method=kill_daemon&session_name="+session_name,
-                                        method: "GET",
-                                        success: function (r) {
-                                            recallback();
-                                            con.innerHTML = "Idle";
-                                        }
-                                    });
-                                }
-
-                            </script>
                             <table border="1" style="border-collapse: collapse;">
                                 <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center" style="padding-left: 20px; padding-right: 20px;">PID</td><td align="center">Action</td></tr>
                                 <?php $i = 1; $callback = ""; foreach ($tg->getSessions() as $key => $session): ?>
                                     <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php $callback .= "getUserStatus(\"{$session['name']}\", \"td_{$key}\");"; print $session["name"]; ?></td><td align="center" id="<?php print "td_{$key}"; ?>"></td><td align="center" id="<?php print "pid_td_{$key}"; ?>" style="padding-right: 10px; padding-left: 10px;"></td><td id="<?php print "btn_td_{$key}"; ?>"></td></tr>
                                 <?php endforeach; ?>
                             </table>
-                            <script type="text/javascript">
-                                function recallback() {
-                                    <?php print $callback; ?>
-                                }
-                                recallback();
-                            </script>
+                      </div>
+                        <div class="wq_inline idsd">
+                            <h3>Incoming Data Stats</h3>
+                            <div>
+                                <table border="1" style="border-collapse: collapse;">
+                                    <tr><td>No.</td><td>Stat name</td><td>Amount</td><td>Range Date</td></tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -539,6 +470,88 @@ Halamn index by Gusti
         <div id="m_scroll_top" class="m-scroll-top">
             <i class="flaticon-up-arrow"></i>
         </div>
+        <script type="text/javascript">
+            function getUserStatus(session_name, td_id) {
+                var con = document.getElementById("connection_status");
+                con.innerHTML = "Getting user status...";
+                $.ajax({
+                    url: "/api.php?method=get_status&session_name="+session_name,
+                    method: "GET",
+                    success: function (r) {
+                        if(r["status"] === "success") {
+                            var pid = document.getElementById("pid_"+td_id),
+                                btn = document.getElementById("btn_"+td_id);
+                            btn.innerHTML = "";
+                            ztd_id = document.getElementById(td_id);
+                            if (r["message"]["status"] == "off") {
+                                ztd_id.innerHTML = "Off";
+                                pid.innerHTML = "-";
+                                var start = document.createElement("button"),
+                                sttext = document.createTextNode("Start");
+                                start.append(sttext);
+                                start.setAttribute("id", td_id+"_start");
+                                start.setAttribute("onclick", "start(\""+session_name+"\", \""+td_id+"\");");
+                                start.setAttribute("style", "cursor:pointer;");
+                                btn.append(start);
+                            } else {
+                                ztd_id.innerHTML = "On";
+                                pid.innerHTML = r["message"]["pid"][0];
+                                var stop = document.createElement("button"),
+                                sttext = document.createTextNode("Stop");
+                                stop.append(sttext);
+                                stop.setAttribute("id", td_id+"_stop");
+                                stop.setAttribute("onclick", "stop(\""+session_name+"\", \""+td_id+"\")");
+                                stop.setAttribute("style", "cursor:pointer;");
+                                btn.append(stop);
+                            }
+                        } else {
+                            alert(JSON.stringify(r));
+                        }
+                        con.innerHTML = "idle";
+                    }
+                });
+            }
+
+            function start(session_name, id)
+            {
+                var con = document.getElementById("connection_status"),
+                q = document.getElementById(id+"_start");
+                q.disabled = 1;
+                con.innerHTML = "Starting "+session_name+"...";
+                $.ajax({
+                    url: "/api.php?method=run_daemon&session_name="+session_name,
+                    method: "GET",
+                    success: function (r) {
+                        recallback();
+                        con.innerHTML = "Idle";
+                    }
+                });
+            }
+
+            function stop(session_name, id)
+            {
+                var con = document.getElementById("connection_status");
+                con.innerHTML = "Stopping "+session_name+"...";
+                var q = document.getElementById(id+"_stop");
+                q.disabled = 1;
+                $.ajax({
+                    url: "/api.php?method=kill_daemon&session_name="+session_name,
+                    method: "GET",
+                    success: function (r) {
+                        recallback();
+                        con.innerHTML = "Idle";
+                    }
+                });
+            }
+
+        </script>
+
+        <script type="text/javascript">
+            function recallback() {
+                <?php print $callback; ?>
+            }
+            recallback();
+        </script>
         <!-- end:: Page -->         
         <!-- begin::Quick Sidebar -->
         <!-- end::Quick Sidebar -->         

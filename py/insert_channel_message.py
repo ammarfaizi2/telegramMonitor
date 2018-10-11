@@ -49,7 +49,7 @@ else:
 			"_id": user["_id"]
 		},
 		{
-			"$inc": { 
+			"$inc": {
 				"msg_count": 1
 			},
 			"$set": {

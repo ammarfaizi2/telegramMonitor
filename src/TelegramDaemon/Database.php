@@ -21,6 +21,28 @@ final class Database
 	}
 
 	/**
+	 * @param int $startDate
+	 * @param int $endDate
+	 * @return int
+	 */
+	public function channelTopicCount(int $startDate, int $endDate): int
+	{
+		$out = (int)$this->phppy->run(
+			"channel_topic_count.py",
+			json_encode(
+				[
+					"start_date" => $startDate,
+					"end_date" => $endDate
+				],
+				JSON_PRETTY_PRINT |
+				JSON_UNESCAPED_SLASHES
+			)
+		);
+
+		return $out;
+	}
+
+	/**
 	 * @param array $data
 	 * @return string
 	 */
