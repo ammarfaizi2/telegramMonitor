@@ -413,6 +413,9 @@ Halamn index by Gusti
                         <div class="account_control">
                             <h3>Account Control</h3>
                             <h5>Connection Status: <span id="connection_status">Idle</span></h5>
+                            <div style="margin-bottom: 5px;">
+                                <a href="logind.php" target="_blank"><button style="cursor: pointer;">Add New Account</button></a>
+                            </div>
                             <script type="text/javascript">
                                 function getUserStatus(session_name, td_id) {
                                     var con = document.getElementById("connection_status");

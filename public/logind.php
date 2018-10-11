@@ -2,7 +2,7 @@
 
 require __DIR__."/../config/init.php";
 
-if (!isset($_GET["session_name"])) {
+if (empty($_GET["session_name"]) || (!is_string($_GET["session_name"]))) {
 	?><!DOCTYPE html>
 	<html>
 	<head>
@@ -12,7 +12,7 @@ if (!isset($_GET["session_name"])) {
 	<h1>MadelineProto</h1>
 	<form method="GET">
 	<p>Enter a session name to save your session: </p>
-	<input type="text" name="session_name">
+	<input type="text" name="session_name" required/>
 	<button type="submit"/>Go</button>
 	</form>
 	</body>
