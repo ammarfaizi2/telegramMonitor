@@ -406,32 +406,55 @@ Halamn index by Gusti
                     </div>
                     <div>
                         <style type="text/css">
-                            .wq_inline {
+                            .wq {
                                 margin-top: 20px;
                                 display: inline-block;
                                 border: 1px solid #000;
                                 margin-left: 20px;
                                 font-family: Arial;
+                                padding: 3px;
+                            }
+                            .stq {
+                                display: inline-block;
+                                vertical-align: top;
                             }
                         </style>
-                        <div class="account_control wq_inline">
-                            <h3>Account Control</h3>
-                            <h5>Connection Status: <span id="connection_status">Idle</span></h5>
+                        <div class="wq">                            
+                            <center>
+                                <h3>Account Control and Incoming Data Stats</h3>
+                                <h5>Connection Status: <span id="connection_status">Idle</span></h5>
+                            </center>
                             <div>
                                 <a href="logind.php" target="_blank"><button style="cursor: pointer;">Add New Account</button></a>
                             </div>
-                            <table border="1" style="border-collapse: collapse;">
-                                <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center" style="padding-left: 20px; padding-right: 20px;">PID</td><td align="center">Action</td></tr>
-                                <?php $i = 1; $callback = ""; foreach ($tg->getSessions() as $key => $session): ?>
-                                    <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php $callback .= "getUserStatus(\"{$session['name']}\", \"td_{$key}\");"; print $session["name"]; ?></td><td align="center" id="<?php print "td_{$key}"; ?>"></td><td align="center" id="<?php print "pid_td_{$key}"; ?>" style="padding-right: 10px; padding-left: 10px;"></td><td id="<?php print "btn_td_{$key}"; ?>"></td></tr>
-                                <?php endforeach; ?>
-                            </table>
-                      </div>
-                        <div class="wq_inline idsd">
-                            <h3>Incoming Data Stats</h3>
-                            <div>
-                                <table border="1" style="border-collapse: collapse;">
+                            <div class="stq">
+                                <table align="left" border="1" style="border-collapse: collapse;">
+                                    <tr><td align="center">No.</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Session Name</td><td align="center" style="padding-left: 10px; padding-right: 10px;">Status</td><td align="center" style="padding-left: 20px; padding-right: 20px;">PID</td><td align="center">Action</td></tr>
+                                    <?php $i = 1; $callback = ""; foreach ($tg->getSessions() as $key => $session): ?>
+                                        <tr><td align="center"><?php print $i++; ?>.</td><td align="center"><?php $callback .= "getUserStatus(\"{$session['name']}\", \"td_{$key}\");"; print $session["name"]; ?></td><td align="center" id="<?php print "td_{$key}"; ?>"></td><td align="center" id="<?php print "pid_td_{$key}"; ?>" style="padding-right: 10px; padding-left: 10px;"></td><td id="<?php print "btn_td_{$key}"; ?>"></td></tr>
+                                    <?php endforeach; ?>
+                                </table>
+                            </div>
+                            <div class="stq">
+                                <table align="right" border="1" style="border-collapse: collapse;" id="incoming_data_stats">
                                     <tr><td>No.</td><td>Stat name</td><td>Amount</td><td>Range Date</td></tr>
+                                    <tr id="stats_loading"><td colspan="4" align="center">
+                                        <div style="margin-top: 10px; margin-bottom: 10px;">
+                                            <h2>Loading...</h2>
+                                        </div>
+                                    </td></tr>
+                                    <tr id="stats_data_1" style="display: none;">
+                                        <td>1.</td>
+                                        <td>Channel Messages Data</td>
+                                        <td id="stats_data_1_val"></td>
+                                        <td id="date_range_1"></td>
+                                    </tr>
+                                    <tr id="stats_data_2" style="display: none;">
+                                        <td>2.</td>
+                                        <td>Private Messages Data</td>
+                                        <td id="stats_data_2_val"></td>
+                                        <td id="date_range_2"></td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -471,6 +494,9 @@ Halamn index by Gusti
             <i class="flaticon-up-arrow"></i>
         </div>
         <script type="text/javascript">
+            $.ajax({
+                url: "/api.php?method=count_private_message"
+            });
             function getUserStatus(session_name, td_id) {
                 var con = document.getElementById("connection_status");
                 con.innerHTML = "Getting user status...";

@@ -59,6 +59,12 @@ class TelegramMonitoringAPI
 			case "kill_daemon":
 				$this->killDaemon();
 				break;
+			case "channel_topic_count":
+				$this->channelTopicCount();
+				break;
+			case "private_topic_count":
+				$this->privateTopicCount();
+				break;
 			default:
 				$this->error("Method \"{$this->apiMethod}\" does not exist");
 				break;
@@ -71,8 +77,27 @@ class TelegramMonitoringAPI
 	private function channelTopicCount(): void
 	{
 		$db = new Database;
-		$a = $db->channelTopicCount(time() - (3600 * 7), time());
-		print $a;
+		$a = $db->channelTopicCount($start = time() - (3600 * 3), time());
+		$this->success([
+			"count" => $a,
+			"start_date" => date("d F Y", $start),
+			"end_date" => date("d F Y"),
+		], 200);
+		exit;
+	}
+
+	/**
+	 * @return void
+	 */
+	private function privateTopicCount(): void
+	{
+		$db = new Database;
+		$a = $db->privateTopicCount($start = time() - (3600 * 3), time());
+		$this->success([
+			"count" => $a,
+			"start_date" => date("d F Y", $start),
+			"end_date" => date("d F Y"),
+		], 200);
 		exit;
 	}
 
