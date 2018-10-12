@@ -27,7 +27,6 @@ class TelegramMonitoringAPI
 			$this->error("\"method\" parameter must be a string");
 		}
 
-
 		$this->apiMethod = trim(strtolower($_GET["method"]));
 		
 		if (isset($_GET["session_name"])) {
