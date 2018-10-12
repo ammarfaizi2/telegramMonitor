@@ -58,11 +58,11 @@ class TelegramMonitoringAPI
 			case "kill_daemon":
 				$this->killDaemon();
 				break;
-			case "channel_topic_count":
-				$this->channelTopicCount();
+			case "channel_message_count":
+				$this->channelMessageCount();
 				break;
-			case "private_topic_count":
-				$this->privateTopicCount();
+			case "private_message_count":
+				$this->privateMessageCount();
 				break;
 			default:
 				$this->error("Method \"{$this->apiMethod}\" does not exist");
@@ -73,10 +73,10 @@ class TelegramMonitoringAPI
 	/**
 	 * @return void
 	 */
-	private function channelTopicCount(): void
+	private function channelMessageCount(): void
 	{
 		$db = new Database;
-		$a = $db->channelTopicCount($start = time() - (3600 * 3), time());
+		$a = $db->channelMessageCount($start = time() - (3600 * 3 * 24), time());
 		$this->success([
 			"count" => $a,
 			"start_date" => date("d F Y", $start),
@@ -88,10 +88,10 @@ class TelegramMonitoringAPI
 	/**
 	 * @return void
 	 */
-	private function privateTopicCount(): void
+	private function privateMessageCount(): void
 	{
 		$db = new Database;
-		$a = $db->privateTopicCount($start = time() - (3600 * 3), time());
+		$a = $db->privateMessageCount($start = time() - (3600 * 3 * 24), time());
 		$this->success([
 			"count" => $a,
 			"start_date" => date("d F Y", $start),
@@ -165,6 +165,7 @@ class TelegramMonitoringAPI
 				$msg = count($pidData)." processes has been killed";
 				foreach ($pidData as $pid) {
 					for ($i=0; $i < 5; $i++) {
+						// -KILL means SIGKILL
 						shell_exec("nohup kill -KILL {$pid} >> /dev/null 2>&1");
 					}
 				}

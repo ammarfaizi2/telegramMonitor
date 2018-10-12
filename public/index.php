@@ -437,23 +437,23 @@ Halamn index by Gusti
                             </div>
                             <div class="stq">
                                 <table align="right" border="1" style="border-collapse: collapse;" id="incoming_data_stats">
-                                    <tr><td>No.</td><td>Stat name</td><td>Amount</td><td>Range Date</td></tr>
+                                    <tr><td align="center">No.</td><td align="center">Stat name</td><td align="center">Amount</td><td align="center">Range Date</td></tr>
                                     <tr id="stats_loading"><td colspan="4" align="center">
                                         <div style="margin-top: 10px; margin-bottom: 10px;">
                                             <h2>Loading...</h2>
                                         </div>
                                     </td></tr>
                                     <tr id="stats_data_1" style="display: none;">
-                                        <td>1.</td>
-                                        <td>Channel Messages Data</td>
-                                        <td id="stats_data_1_val"></td>
-                                        <td id="date_range_1"></td>
+                                        <td align="center">1.</td>
+                                        <td align="center" style="width: 180px;">Channel Messages Data</td>
+                                        <td align="center" id="stats_data_1_val"></td>
+                                        <td align="center" id="date_range_1" style="width: 280px;"></td>
                                     </tr>
                                     <tr id="stats_data_2" style="display: none;">
-                                        <td>2.</td>
-                                        <td>Private Messages Data</td>
-                                        <td id="stats_data_2_val"></td>
-                                        <td id="date_range_2"></td>
+                                        <td align="center">2.</td>
+                                        <td align="center" style="width: 180px;">Private Messages Data</td>
+                                        <td align="center" id="stats_data_2_val" style="width: 100px;"></td>
+                                        <td align="center"id="date_range_2" style="width: 280px;"></td>
                                     </tr>
                                 </table>
                             </div>
@@ -495,7 +495,28 @@ Halamn index by Gusti
         </div>
         <script type="text/javascript">
             $.ajax({
-                url: "/api.php?method=count_private_message"
+                url: "/api.php?method=channel_message_count",
+                method: "GET",
+                success: function (r) {
+                    if (r["status"] === "success") {
+                        $("#stats_loading")[0].style.display = "none";
+                        $("#stats_data_1")[0].style.display = "";
+                        $("#stats_data_1_val")[0].innerHTML = r["message"]["count"];
+                        $("#date_range_1")[0].innerHTML = r["message"]["start_date"]+" - "+r["message"]["end_date"];
+                    }
+                }
+            });
+            $.ajax({
+                url: "/api.php?method=private_message_count",
+                method: "GET",
+                success: function (r) {
+                    if (r["status"] === "success") {
+                        $("#stats_loading")[0].style.display = "none";
+                        $("#stats_data_2")[0].style.display = "";
+                        $("#stats_data_2_val")[0].innerHTML = r["message"]["count"];
+                        $("#date_range_2")[0].innerHTML = r["message"]["start_date"]+" - "+r["message"]["end_date"];
+                    }
+                }
             });
             function getUserStatus(session_name, td_id) {
                 var con = document.getElementById("connection_status");

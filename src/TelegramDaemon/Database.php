@@ -25,7 +25,7 @@ final class Database
 	 * @param int $endDate
 	 * @return int
 	 */
-	public function channelTopicCount(int $startDate, int $endDate): int
+	public function channelMessageCount(int $startDate, int $endDate): int
 	{
 		$out = (int)$this->phppy->run(
 			"channel_message_counter.py",
@@ -47,7 +47,7 @@ final class Database
 	 * @param int $endDate
 	 * @return int
 	 */
-	public function privateTopicCount(int $startDate, int $endDate): int
+	public function privateMessageCount(int $startDate, int $endDate): int
 	{
 		$out = (int)$this->phppy->run(
 			"private_message_counter.py",
